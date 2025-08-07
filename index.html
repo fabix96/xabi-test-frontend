@@ -3,206 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Energy Meter Integration Dashboard</title>
+    <title>Energy Meter Integration</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app">
-        <!-- Sidebar Navigation -->
-        <nav class="sidebar">
-            <div class="sidebar-header">
-                <h2>Energy Meter Integration</h2>
-            </div>
-            <ul class="nav-menu">
-                <li>
-                    <button class="nav-item active" data-section="dashboard">
-                        <span class="nav-icon">📊</span>
-                        Dashboard
-                    </button>
-                </li>
-                <li>
-                    <button class="nav-item" data-section="add-meter">
-                        <span class="nav-icon">➕</span>
-                        Add Meter
-                    </button>
-                </li>
-                <li>
-                    <button class="nav-item" data-section="meter-list">
-                        <span class="nav-icon">📋</span>
-                        Meter List
-                    </button>
-                </li>
-            </ul>
-        </nav>
+    <div class="container">
+        <header class="app-header">
+            <h1>Energy Meter Integration</h1>
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
+                <button class="nav-tab" data-tab="add-meter">Add Meter</button>
+                <button class="nav-tab" data-tab="meter-list">Meter List</button>
+            </nav>
+        </header>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Dashboard Section -->
-            <section id="dashboard" class="content-section active">
-                <div class="section-header">
-                    <h1>Dashboard Overview</h1>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">📊</div>
-                        <div class="stat-content">
-                            <h3 id="total-meters">0</h3>
-                            <p>Total Meters</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon" id="sync-status-icon">✅</div>
-                        <div class="stat-content">
-                            <h3 id="sync-status">Success</h3>
-                            <p>Last Sync Status</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">⏰</div>
-                        <div class="stat-content">
-                            <h3 id="next-sync">--:--</h3>
-                            <p>Next Sync</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="sync-info">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <div class="dashboard-grid">
                     <div class="card">
                         <div class="card__body">
-                            <h3>Synchronization Schedule</h3>
-                            <p>The system automatically retrieves and processes data from configured energy meters every hour.</p>
-                            <div class="sync-details">
-                                <div class="sync-detail">
-                                    <strong>Frequency:</strong> <span id="sync-frequency">Every Hour</span>
+                            <h3>Total Meters</h3>
+                            <div class="stat-value" id="total-meters">0</div>
+                            <div class="stat-label">Registered meters</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Active Connections</h3>
+                            <div class="stat-value" id="active-connections">0</div>
+                            <div class="stat-label">Currently connected</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>System Status</h3>
+                            <div class="status status--success">Online</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Meter Tab -->
+            <div id="add-meter" class="tab-content">
+                <div class="form-container">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Register New Meter</h3>
+                        </div>
+                        <div class="card__body">
+                            <form id="meter-form">
+                                <div class="form-group">
+                                    <label for="meter-id" class="form-label">Meter ID *</label>
+                                    <input type="text" id="meter-id" name="meter_id" class="form-control" required 
+                                           placeholder="e.g., METER_001">
                                 </div>
-                                <div class="sync-detail">
-                                    <strong>Last Sync:</strong> <span id="last-sync">--:--</span>
+                                <div class="form-group">
+                                    <label for="gateway-key" class="form-label">Gateway Key *</label>
+                                    <input type="text" id="gateway-key" name="gateway_key" class="form-control" required 
+                                           placeholder="e.g., GW_KEY_ABC123">
+                                </div>
+                                <div class="form-group">
+                                    <label for="gateway-token" class="form-label">Gateway Token *</label>
+                                    <input type="text" id="gateway-token" name="gateway_token" class="form-control" required 
+                                           placeholder="e.g., TOKEN_XYZ789">
+                                </div>
+                                <div class="form-group">
+                                    <label for="parameter-id" class="form-label">Parameter ID *</label>
+                                    <input type="number" id="parameter-id" name="parameter_id" class="form-control" required 
+                                           placeholder="e.g., 42" min="1">
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn--primary btn--full-width" id="submit-btn">
+                                        <span class="btn-text">Register Meter</span>
+                                        <span class="btn-loading hidden">Registering...</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meter List Tab -->
+            <div id="meter-list" class="tab-content">
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Registered Meters</h3>
+                        <button class="btn btn--secondary btn--sm" id="refresh-btn">
+                            <span class="refresh-text">Refresh</span>
+                            <span class="refresh-loading hidden">Loading...</span>
+                        </button>
+                    </div>
+                    <div class="card__body">
+                        <div class="table-container">
+                            <div id="loading-indicator" class="loading-indicator hidden">
+                                <div class="loading-text">Loading meters...</div>
+                            </div>
+                            <div id="meters-table-container">
+                                <table id="meters-table" class="meters-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Meter ID</th>
+                                            <th>Gateway Key</th>
+                                            <th>Gateway Token</th>
+                                            <th>Parameter ID</th>
+                                            <th>Last Update</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="meters-tbody">
+                                        <!-- Meter rows will be inserted here -->
+                                    </tbody>
+                                </table>
+                                <div id="no-meters" class="no-data hidden">
+                                    <div class="no-data-text">No meters registered yet.</div>
+                                    <button class="btn btn--primary" onclick="switchTab('add-meter')">Add Your First Meter</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
-
-            <!-- Add Meter Section -->
-            <section id="add-meter" class="content-section">
-                <div class="section-header">
-                    <h1>Register New Meter</h1>
-                </div>
-                
-                <div class="form-container">
-                    <form id="meter-form" class="meter-form">
-                        <div class="form-group">
-                            <label for="gateway-key" class="form-label">Gateway Key *</label>
-                            <input type="text" id="gateway-key" name="gatewayKey" class="form-control" required>
-                            <div class="error-message"></div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="gateway-token" class="form-label">Gateway Token *</label>
-                            <input type="text" id="gateway-token" name="gatewayToken" class="form-control" required>
-                            <div class="error-message"></div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="meter-id" class="form-label">Meter ID *</label>
-                            <input type="text" id="meter-id" name="meterId" class="form-control" required>
-                            <div class="error-message"></div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="parameter-id" class="form-label">Parameter ID *</label>
-                            <input type="number" id="parameter-id" name="parameterId" class="form-control" required min="1">
-                            <div class="error-message"></div>
-                        </div>
-                        
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn--primary">Register Meter</button>
-                            <button type="reset" class="btn btn--secondary">Clear Form</button>
-                        </div>
-                    </form>
-                </div>
-            </section>
-
-            <!-- Meter List Section -->
-            <section id="meter-list" class="content-section">
-                <div class="section-header">
-                    <h1>Registered Meters</h1>
-                    <div class="section-actions">
-                        <button id="refresh-list" class="btn btn--outline">🔄 Refresh</button>
-                    </div>
-                </div>
-                
-                <div class="table-container">
-                    <table id="meters-table" class="meters-table">
-                        <thead>
-                            <tr>
-                                <th data-sort="meterId" class="sortable">
-                                    Meter ID
-                                    <span class="sort-arrow">↕️</span>
-                                </th>
-                                <th data-sort="gatewayKey" class="sortable">
-                                    Gateway Key
-                                    <span class="sort-arrow">↕️</span>
-                                </th>
-                                <th data-sort="gatewayToken" class="sortable">
-                                    Gateway Token
-                                    <span class="sort-arrow">↕️</span>
-                                </th>
-                                <th data-sort="parameterId" class="sortable">
-                                    Parameter ID
-                                    <span class="sort-arrow">↕️</span>
-                                </th>
-                                <th data-sort="lastInsertionTimestamp" class="sortable">
-                                    Last Insertion
-                                    <span class="sort-arrow">↕️</span>
-                                </th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="meters-table-body">
-                            <!-- Table rows will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                    
-                    <div id="empty-state" class="empty-state hidden">
-                        <div class="empty-icon">📊</div>
-                        <h3>No meters registered</h3>
-                        <p>Start by adding your first energy meter using the "Add Meter" form.</p>
-                        <button class="btn btn--primary" data-section="add-meter">Add First Meter</button>
-                    </div>
-                </div>
-            </section>
+            </div>
         </main>
-    </div>
 
-    <!-- Confirmation Modal -->
-    <div id="confirmation-modal" class="modal hidden">
-        <div class="modal-overlay"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Confirm Deletion</h3>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete this meter? This action cannot be undone.</p>
-                <div class="meter-info">
-                    <strong>Meter ID:</strong> <span id="delete-meter-id"></span>
+        <!-- Notification System -->
+        <div id="notifications" class="notifications"></div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="delete-modal" class="modal hidden">
+            <div class="modal-overlay" onclick="closeDeleteModal()"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Confirm Delete</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete meter <strong id="delete-meter-id"></strong>?</p>
+                    <p class="warning-text">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn--secondary" onclick="closeDeleteModal()">Cancel</button>
+                    <button class="btn btn--primary" id="confirm-delete-btn" onclick="confirmDelete()">
+                        <span class="delete-text">Delete</span>
+                        <span class="delete-loading hidden">Deleting...</span>
+                    </button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button id="confirm-delete" class="btn btn--primary">Delete Meter</button>
-                <button id="cancel-delete" class="btn btn--secondary">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Notification -->
-    <div id="notification" class="notification hidden">
-        <div class="notification-content">
-            <span class="notification-message"></span>
         </div>
     </div>
 
